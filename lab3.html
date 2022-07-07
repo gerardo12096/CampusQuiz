@@ -1,0 +1,600 @@
+<html>
+  <head>
+    <title>Add Map</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+    <!-- <link rel="stylesheet" type="text/css" href="./style.css" /> -->
+    <!-- <script type="module" src="./index.js"></script> -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        window.onload = function () {
+          initMap();
+        };
+
+        //Hard coded questions into an array
+        let questions = [
+          "Where is Jacaranda Hall?",
+          "Where is RedWood Hall?",
+          "Where is the Library?",
+          "Where is Sequoia Hall?",
+          "Where is the CSUN Recreational Pool?",
+        ];
+
+        //Building names stored into an array
+        let buildings = [
+          "Jacaranda",
+          "RedWood_Hall",
+          "Library",
+          "Sequoia",
+          "Pool",
+        ];
+
+        //Variables that keep track of the current question and helps with the quiz game logic
+        let current = 0;
+        let Jacarandaq = 0;
+        let RedWoodq = 1;
+        let Libraryq = 2;
+        let Sequoiaq = 3;
+        let Poolq = 4;
+        let incorrect = 0;
+        let totalCorrect = 0;
+
+        //This sets the Map options and styling
+        function initMap() {
+          let options = {
+            //mapId: "8e0a97af9386fef",
+            zoom: 18,
+            center: { lat: 34.241, lng: -118.5277 },
+            scrollwheel: false,
+            disableDoubleClickZoom: true,
+            draggable: false,
+            zoomControl: false,
+            disableDefaultUI: true,
+            styles: [
+              {
+                featureType: "all",
+                elementType: "labels",
+                stylers: [{ visibility: "off" }],
+              },
+            ],
+          };
+
+          let map = new google.maps.Map(
+            document.getElementById("map"),
+            options
+          );
+
+          //This creates the rectangle for Jacaranda Hall but hides it initially until clicked
+          let Jacaranda = new google.maps.Rectangle({
+            strokeColor: "lightgreen",
+            strokeOpacity: 0.0,
+            strokeWeight: 2,
+            fillColor: "lightgreen",
+            fillOpacity: 0.0,
+            bounds: new google.maps.LatLngBounds(
+              new google.maps.LatLng(34.242154, -118.529597),
+              new google.maps.LatLng(34.240994, -118.527707)
+            ),
+          });
+
+          Jacaranda.setMap(map);
+
+          //This creates the rectangle for RedWood Hall but hides it initially until clicked
+
+          let RedWood_Hall = new google.maps.Rectangle({
+            strokeColor: "red",
+            strokeOpacity: 0.0,
+            strokeWeight: 2,
+            fillColor: "red",
+            fillOpacity: 0.0,
+            bounds: new google.maps.LatLngBounds(
+              new google.maps.LatLng(34.24238, -118.5268),
+              new google.maps.LatLng(34.2413, -118.52571)
+            ),
+          });
+
+          RedWood_Hall.setMap(map);
+
+          //This creates the rectangle for the Library but hides it initially until clicked
+
+          let Library = new google.maps.Rectangle({
+            strokeColor: "lightgreen",
+            strokeOpacity: 0.0,
+            strokeWeight: 2,
+            fillColor: "lightgreen",
+            fillOpacity: 0.0,
+            bounds: new google.maps.LatLngBounds(
+              new google.maps.LatLng(34.24042, -118.53009),
+              new google.maps.LatLng(34.23964, -118.52865)
+            ),
+          });
+
+          Library.setMap(map);
+
+          //This creates the rectangle for Sequoia Hall but hides it initially until clicked
+
+          let Sequoia = new google.maps.Rectangle({
+            strokeColor: "lightgreen",
+            strokeOpacity: 0.0,
+            strokeWeight: 2,
+            fillColor: "lightgreen",
+            fillOpacity: 0.0,
+            bounds: new google.maps.LatLngBounds(
+              new google.maps.LatLng(34.24079, -118.52843),
+              new google.maps.LatLng(34.24015, -118.52761)
+            ),
+          });
+
+          Sequoia.setMap(map);
+
+          //This creates the rectangle for the CSUN Pool but hides it initially until clicked
+
+          let Pool = new google.maps.Rectangle({
+            strokeColor: "lightgreen",
+            strokeOpacity: 0.0,
+            strokeWeight: 2,
+            fillColor: "lightgreen",
+            fillOpacity: 0.0,
+            bounds: new google.maps.LatLngBounds(
+              new google.maps.LatLng(34.240794, -118.525738),
+              new google.maps.LatLng(34.240586, -118.525362)
+            ),
+          });
+
+          Pool.setMap(map);
+
+          //If the user correctly clicks on Jacaranda Hall, then the rectangle will display green. However
+          //if the user incorrectly clicks on Jacaranda Hall, then the rectangle will display red
+
+          google.maps.event.addListener(Jacaranda, "dblclick", function () {
+            console.log("Jacaranda");
+            if (current === Jacarandaq) {
+              totalCorrect++;
+              setSuccess();
+              Jacaranda.setOptions({
+                strokeColor: "lightgreen",
+                fillColor: "lightgreen",
+                strokeOpacity: 0.6,
+                strokeWeight: 2,
+                fillOpacity: 0.4,
+              });
+            } else {
+              setError();
+              if (buildings[current] === "RedWood_Hall") {
+                RedWood_Hall.setOptions({
+                  strokeColor: "red",
+                  fillColor: "red",
+                  strokeOpacity: 0.6,
+                  strokeWeight: 2,
+                  fillOpacity: 0.4,
+                });
+              } else if (buildings[current] === "Library") {
+                Library.setOptions({
+                  strokeColor: "red",
+                  fillColor: "red",
+                  strokeOpacity: 0.6,
+                  strokeWeight: 2,
+                  fillOpacity: 0.4,
+                });
+              } else if (buildings[current] === "Sequoia") {
+                Sequoia.setOptions({
+                  strokeColor: "red",
+                  fillColor: "red",
+                  strokeOpacity: 0.6,
+                  strokeWeight: 2,
+                  fillOpacity: 0.4,
+                });
+              } else if (buildings[current] === "Pool") {
+                Pool.setOptions({
+                  strokeColor: "red",
+                  fillColor: "red",
+                  strokeOpacity: 0.6,
+                  strokeWeight: 2,
+                  fillOpacity: 0.4,
+                });
+              }
+            }
+            setTimeout(() => {
+              current++;
+              setNutruel();
+              nextQuestion();
+            }, 1000);
+          });
+
+          //This function displays the next question after a certain amount of time a user
+          //has answered a question
+          function nextQuestion() {
+            if (current >= questions.length) {
+              setOver();
+              tally.innerText = totalCorrect;
+              showAnimation();
+              console.log("Ending");
+            } else {
+              question.innerText = questions[current];
+            }
+          }
+
+          //If the user clicks on anywhere on the map that is not the correct answer, then the current building in
+          //question will display red
+          map.addListener("dblclick", function () {
+            setError();
+            if (buildings[current] === "Jacaranda") {
+              Jacaranda.setOptions({
+                strokeColor: "red",
+                fillColor: "red",
+                strokeOpacity: 0.6,
+                strokeWeight: 2,
+                fillOpacity: 0.4,
+              });
+            } else if (buildings[current] === "RedWood_Hall") {
+              RedWood_Hall.setOptions({
+                strokeColor: "red",
+                fillColor: "red",
+                strokeOpacity: 0.6,
+                strokeWeight: 2,
+                fillOpacity: 0.4,
+              });
+            } else if (buildings[current] === "Library") {
+              Library.setOptions({
+                strokeColor: "red",
+                fillColor: "red",
+                strokeOpacity: 0.6,
+                strokeWeight: 2,
+                fillOpacity: 0.4,
+              });
+            } else if (buildings[current] === "Sequoia") {
+              Sequoia.setOptions({
+                strokeColor: "red",
+                fillColor: "red",
+                strokeOpacity: 0.6,
+                strokeWeight: 2,
+                fillOpacity: 0.4,
+              });
+            } else if (buildings[current] === "Pool") {
+              Pool.setOptions({
+                strokeColor: "red",
+                fillColor: "red",
+                strokeOpacity: 0.6,
+                strokeWeight: 2,
+                fillOpacity: 0.4,
+              });
+            }
+            setTimeout(() => {
+              current++;
+              setNutruel();
+              nextQuestion();
+            }, 1000);
+          });
+
+          //If the user correctly clicks on RedWood Hall, then the rectangle will display green. However
+          //if the user incorrectly clicks on RedWood Hall, then the rectangle will display red
+          google.maps.event.addListener(RedWood_Hall, "dblclick", function () {
+            if (current === RedWoodq) {
+              totalCorrect++;
+              console.log("RedWood Hall");
+              setSuccess();
+              RedWood_Hall.setOptions({
+                strokeColor: "lightgreen",
+                fillColor: "lightgreen",
+                strokeOpacity: 0.6,
+                strokeWeight: 2,
+                fillOpacity: 0.4,
+              });
+            } else {
+              setError();
+              console.log(buildings[current]);
+              if (buildings[current] === "Jacaranda") {
+                console.log("here");
+                Jacaranda.setOptions({
+                  strokeColor: "red",
+                  fillColor: "red",
+                  strokeOpacity: 0.6,
+                  strokeWeight: 2,
+                  fillOpacity: 0.4,
+                });
+              } else if (buildings[current] === "Library") {
+                Library.setOptions({
+                  strokeColor: "red",
+                  fillColor: "red",
+                  strokeOpacity: 0.6,
+                  strokeWeight: 2,
+                  fillOpacity: 0.4,
+                });
+              } else if (buildings[current] === "Sequoia") {
+                Sequoia.setOptions({
+                  strokeColor: "red",
+                  fillColor: "red",
+                  strokeOpacity: 0.6,
+                  strokeWeight: 2,
+                  fillOpacity: 0.4,
+                });
+              } else if (buildings[current] === "Pool") {
+                Pool.setOptions({
+                  strokeColor: "red",
+                  fillColor: "red",
+                  strokeOpacity: 0.6,
+                  strokeWeight: 2,
+                  fillOpacity: 0.4,
+                });
+              }
+            }
+            setTimeout(() => {
+              current++;
+              setNutruel();
+              nextQuestion();
+            }, 1000);
+          });
+
+          //If the user correctly clicks on the Library, then the rectangle will display green. However
+          //if the user incorrectly clicks on the Library, then the rectangle will display red
+          google.maps.event.addListener(Library, "dblclick", function () {
+            if (current === Libraryq) {
+              console.log("Library");
+              totalCorrect++;
+              setSuccess();
+              Library.setOptions({
+                strokeColor: "lightgreen",
+                fillColor: "lightgreen",
+                strokeOpacity: 0.6,
+                strokeWeight: 2,
+                fillOpacity: 0.4,
+              });
+            } else {
+              setError();
+              if (buildings[current] === "RedWood_Hall") {
+                RedWood_Hall.setOptions({
+                  strokeColor: "red",
+                  fillColor: "red",
+                  strokeOpacity: 0.6,
+                  strokeWeight: 2,
+                  fillOpacity: 0.4,
+                });
+              } else if (buildings[current] === "Jacaranda") {
+                Jacaranda.setOptions({
+                  strokeColor: "red",
+                  fillColor: "red",
+                  strokeOpacity: 0.6,
+                  strokeWeight: 2,
+                  fillOpacity: 0.4,
+                });
+              } else if (buildings[current] === "Sequoia") {
+                Sequoia.setOptions({
+                  strokeColor: "red",
+                  fillColor: "red",
+                  strokeOpacity: 0.6,
+                  strokeWeight: 2,
+                  fillOpacity: 0.4,
+                });
+              } else if (buildings[current] === "Pool") {
+                Pool.setOptions({
+                  strokeColor: "red",
+                  fillColor: "red",
+                  strokeOpacity: 0.6,
+                  strokeWeight: 2,
+                  fillOpacity: 0.4,
+                });
+              }
+            }
+            setTimeout(() => {
+              current++;
+              setNutruel();
+              nextQuestion();
+            }, 1000);
+          });
+
+          //If the user correctly clicks on Sequoia Hall, then the rectangle will display green. However
+          //if the user incorrectly clicks on Sequoia Hall, then the rectangle will display red
+          google.maps.event.addListener(Sequoia, "dblclick", function () {
+            if (current === Sequoiaq) {
+              totalCorrect++;
+              setSuccess();
+              Sequoia.setOptions({
+                strokeColor: "lightgreen",
+                fillColor: "lightgreen",
+                strokeOpacity: 0.6,
+                strokeWeight: 2,
+                fillOpacity: 0.4,
+              });
+            } else {
+              setError();
+              if (buildings[current] === "RedWood_Hall") {
+                RedWood_Hall.setOptions({
+                  strokeColor: "red",
+                  fillColor: "red",
+                  strokeOpacity: 0.6,
+                  strokeWeight: 2,
+                  fillOpacity: 0.4,
+                });
+              } else if (buildings[current] === "Jacaranda") {
+                Jacaranda.setOptions({
+                  strokeColor: "red",
+                  fillColor: "red",
+                  strokeOpacity: 0.6,
+                  strokeWeight: 2,
+                  fillOpacity: 0.4,
+                });
+              } else if (buildings[current] === "Library") {
+                Library.setOptions({
+                  strokeColor: "red",
+                  fillColor: "red",
+                  strokeOpacity: 0.6,
+                  strokeWeight: 2,
+                  fillOpacity: 0.4,
+                });
+              } else if (buildings[current] === "Pool") {
+                Pool.setOptions({
+                  strokeColor: "red",
+                  fillColor: "red",
+                  strokeOpacity: 0.6,
+                  strokeWeight: 2,
+                  fillOpacity: 0.4,
+                });
+              }
+            }
+            setTimeout(() => {
+              current++;
+              setNutruel();
+              nextQuestion();
+            }, 1000);
+          });
+
+          //If the user correctly clicks on the CSUN Pool, then the rectangle will display green. However
+          //if the user incorrectly clicks on CSUN Pool, then the rectangle will display red
+          google.maps.event.addListener(Pool, "dblclick", function () {
+            if (current === Poolq) {
+              totalCorrect++;
+              setSuccess();
+              Pool.setOptions({
+                strokeColor: "lightgreen",
+                fillColor: "lightgreen",
+                strokeOpacity: 0.6,
+                strokeWeight: 2,
+                fillOpacity: 0.4,
+              });
+            } else {
+              setError();
+              if (buildings[current] === "Jacaranda") {
+                Jacaranda.setOptions({
+                  strokeColor: "red",
+                  fillColor: "red",
+                  strokeOpacity: 0.6,
+                  strokeWeight: 2,
+                  fillOpacity: 0.4,
+                });
+              } else if (buildings[current] === "RedWood_Hall") {
+                RedWood_Hall.setOptions({
+                  strokeColor: "red",
+                  fillColor: "red",
+                  strokeOpacity: 0.6,
+                  strokeWeight: 2,
+                  fillOpacity: 0.4,
+                });
+              } else if (buildings[current] === "Library") {
+                Library.setOptions({
+                  strokeColor: "red",
+                  fillColor: "red",
+                  strokeOpacity: 0.6,
+                  strokeWeight: 2,
+                  fillOpacity: 0.4,
+                });
+              } else if (buildings[current] === "Sequoia") {
+                Sequoia.setOptions({
+                  strokeColor: "red",
+                  fillColor: "red",
+                  strokeOpacity: 0.6,
+                  strokeWeight: 2,
+                  fillOpacity: 0.4,
+                });
+              }
+            }
+            setTimeout(() => {
+              current++;
+              setNutruel();
+              nextQuestion();
+            }, 1000);
+          });
+
+          //This function runs once all the questions have been answered
+          function setOver() {
+            result.className = "result over";
+            result.innerHTML = "<h1>GAME OVER</h1>";
+          }
+
+          //This function runs when the current question is answered correctly
+          function setSuccess() {
+            incorrect = 0;
+            console.log(result);
+            result.className = "result success";
+            result.innerHTML = "<h1>Correct</h1>";
+            console.log(result);
+          }
+
+          //This function runs when the current question is incorrectly answered
+          function setError() {
+            incorrect++;
+            result.className = "result error";
+            result.innerHTML += "<h1>Incorrect</h1>";
+          }
+
+          //This function runs after a certain time after a question has been answered.
+          //Clears the correct and incorrect message that gets printed on the screen after the user
+          //Answers a question
+          function setNutruel() {
+            result.className = "result ";
+            result.innerText = "";
+          }
+
+          //Once all questions have been answered, a jQuery animation pops up showing the total results
+          function showAnimation() {
+            $("#jQuery")
+              .css("visibility", "visible")
+              .animate({ "margin-top": "50px" }, "1000");
+          }
+        }
+        // window.initMap = initMap;
+      });
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1Hy8WY3gZK2PfP-yOV26X5vRvkJlmkgY&v=weekly"></script>
+    <title>My Google Map</title>
+    <style>
+      #map {
+        position: absolute;
+        /*height: 650px;*/
+        height: 900px;
+        width: 100%;
+      }
+
+      /* #score {
+            left: 0;
+            position: relative;
+            background-color: rgb(231, 215, 126);
+            width: 100%;
+            z-index: 5;
+            background-color: green;
+            top: -150px;
+            height: 150px;
+        } */
+
+      #jQuery {
+        visibility: hidden;
+        position: relative;
+        z-index: 10px;
+        background-color: gold;
+        width: 20%;
+        height: 80px;
+        margin-top: 850px;
+        margin-left: 500px;
+      }
+
+      .result {
+        visibility: hidden;
+      }
+
+      .result.error {
+        visibility: visible;
+        color: red;
+      }
+
+      .result.success {
+        visibility: visible;
+        color: lightgreen;
+      }
+
+      .result.over {
+        visibility: visible;
+        color: black;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>CSUN Campus Game Quiz</h1>
+    <p id="question">Where is Jacaranda Hall?</p>
+    <div id="result" class="result"></div>
+    <div id="map"></div>
+    <div id="jQuery">
+      You Scored: <span id="tally"></span>/5 Possible Points!!
+    </div>
+  </body>
+</html>
